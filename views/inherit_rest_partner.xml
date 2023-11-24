@@ -6,7 +6,7 @@
     <field name="inherit_id" ref="base.view_partner_form" />
     <field name="arch" type="xml">
       <data>
-        <xpath expr="//field[@name='email']" position="after">
+        <xpath expr="//field[@name='vat']" position="after">
           <!-- Add your 'No KK' field here -->
           <field name="id_kk" placeholder="Nomor KK" />
           <field name="no_tps" placeholder="No TPS" />
