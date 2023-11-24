@@ -47,18 +47,28 @@ class BebungahAuth(http.Controller):
         name = kw["name"]
         phone = kw["phone"]
         street = kw["street"]
-        id_card = kw["id_card"]
+        id_kk = kw["id_kk"]
+        no_tps = kw["no_tps"]
+        
         try:
-            image_binary = base64.b64encode(kw['image_1920'].read()) if kw.get('image_1920') else False
-            id_card = base64.b64encode(kw['id_card'].read()) if kw.get('id_card') else False
-
+            # image_binary = base64.b64encode(kw['image_1920'].read()) if kw.get('image_1920') else False
+            # id_card = base64.b64encode(kw['id_card'].read()) if kw.get('id_card') else False
+            
+            existing_user = request.env['res.partner'].sudo().search([('id_kk', '=', id_kk)])
+            if existing_user:
+                return request.make_response(json.dumps({
+                    'status': 'failed',
+                    'message': 'User dengan no Kartu Keluarga sudah ada.',
+                }), headers={'Content-Type': 'application/json'})
+                
             User = request.env['res.partner'].sudo()
             newUser = User.create({
                 'name': name,
                 'phone': phone,
                 'street': street,
-                'image_1920': image_binary,
-                'id_card ': image_binary
+                'id_kk': id_kk,
+                'no_tps': no_tps
+                
             })
      
         except Exception as e:
@@ -67,7 +77,7 @@ class BebungahAuth(http.Controller):
                 'status': 'failed',
                 'message': f'Error creating user. Error: {e}',
             }), headers={'Content-Type': 'application/json'})
-        image_base64 = image_binary.decode('utf-8') if image_binary else None
+        # image_base64 = image_binary.decode('utf-8') if image_binary else None
     
         
         return request.make_response(json.dumps({
@@ -78,44 +88,20 @@ class BebungahAuth(http.Controller):
                 'name': newUser.name,
                 'phone': newUser.phone,
                 'street': newUser.street,
-                'image_1920': image_base64,
-                'id_card': id_card
+                'id_kk': newUser.id_kk,
+                'no_tps': newUser.no_tps
+               
             }
         }), headers={'Content-Type': 'application/json'})
 
-    def convert_image_to_base64(self, image):
-        try:
-            encoded_image = base64.b64encode(image.read())
-            return encoded_image
-        except Exception as e:
-            _logger.error(f"Error converting image to base64: {e}")
+    # def convert_image_to_base64(self, image):
+    #     try:
+    #         encoded_image = base64.b64encode(image.read())
+    #         return encoded_image
+    #     except Exception as e:
+    #         _logger.error(f"Error converting image to base64: {e}")
             
-            return None
-        
-    @http.route('/api/upload/profilePhoto', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
-    def uploadProfilePhoto(self, **kw):
-        photoUser = request.env['res.partner'].sudo().search([
-            ("id", "=", request.env.uid)
-        ])
-
-        photoUser = photoUser[0]
-
-        image_1920 = request.httprequest.files.getlist('Profile')
-
-        for file in image_1920:
-            attachment = file.read()
-            redableProfile = io.BytesIO(attachment)
-    
-        encodedImage = base64.b64encode(redableProfile.getvalue())
-
-        photoUser.write({
-            'image_1920': encodedImage
-        })
-        
-        return request.make_response(json.dumps(       {
-            'status': 'success',
-            'message': 'Photo Profile Berhasil Diedit',
-            }), headers={'Content-Type': 'application/json'})
+    #         return None
         
     @http.route('/api/get_all_users', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def get_all_users(self, **kw):
@@ -130,12 +116,14 @@ class BebungahAuth(http.Controller):
                     'name': user.name,
                     'phone': user.phone,
                     'street': user.street,
+                    'id_kk': user.id_kk,
+                    'no_tps': user.no_tps
                     
                 })
 
             return request.make_response(json.dumps({
                 'status': 'success',
-                'message': 'Berhasil mendapatkan user',
+                'message': 'Berhasil mendapatkan  data semua user',
                 'data': user_data,
             }), headers={'Content-Type': 'application/json'})
 
