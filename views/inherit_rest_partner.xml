@@ -7,9 +7,14 @@
     <field name="arch" type="xml">
       <data>
         <xpath expr="//field[@name='vat']" position="after">
-          <!-- Add your 'No KK' field here -->
+          <field name="no_ktp" placeholder="Nomor KTP" />
           <field name="id_kk" placeholder="Nomor KK" />
           <field name="no_tps" placeholder="No TPS" />
+          <field name="id_desa" placeholder="Nama Desa" />
+          <field name="id_kecamatan" placeholder="Nama Kecamatan" />
+          <field name="id_card" placeholder="No Seri Kartu" />
+          <field name="id_foto" placeholder="Foto Profile" />
+          <field name="state" placeholder="Status" />
         </xpath>
       </data>
     </field>
