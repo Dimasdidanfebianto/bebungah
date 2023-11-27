@@ -3,11 +3,11 @@ import json
 import logging
 from odoo import http
 from odoo.http import request
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
 class BebungahUser(http.Controller):
-
     @http.route('/api/create', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def userCreate(self, **kw):
         try:
@@ -20,6 +20,7 @@ class BebungahUser(http.Controller):
             id_kk = kw["id_kk"]
             no_tps = kw["no_tps"]
             id_card = kw["id_card"]
+            state = kw["state"]
             id_foto = kw["id_foto"]
             image_1920 = kw["image_1920"]
 
@@ -37,6 +38,7 @@ class BebungahUser(http.Controller):
                 'id_kk': id_kk,
                 'no_tps': no_tps,
                 'id_card': id_card,
+                'state': state,
                 'id_foto': image_base64_id_foto,
                 'image_1920': image_base64_1920
             })
@@ -55,6 +57,7 @@ class BebungahUser(http.Controller):
                     'id_kk': newUser.id_kk,
                     'no_tps': newUser.no_tps,
                     'id_card': newUser.id_card,
+                    'state': newUser.state,
                     'id_foto': image_base64_id_foto,
                     'image_1920': image_base64_1920
                 }
@@ -90,8 +93,13 @@ class BebungahUser(http.Controller):
                     'name': user.name,
                     'phone': user.phone,
                     'street': user.street,
+                    'no_ktp': user.no_ktp,
+                    'id_desa': user.id_desa,
+                    'id_kecamatan': user.id_kecamatan,
                     'id_kk': user.id_kk,
-                    'no_tps': user.no_tps
+                    'no_tps': user.no_tps,
+                    'id_card': user.id_card,
+                    'state': user.state,
                     
                 })
 
@@ -105,4 +113,60 @@ class BebungahUser(http.Controller):
             return request.make_response(json.dumps({
                 'status': 'failed',
                 'message': f'Error: {e}',
-            }), headers={'Content-Type': 'application/json'})   
+            }), headers={'Content-Type': 'application/json'})
+            
+    @http.route('/api/update_user', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
+    def updateUser(self, **kw):
+        if 'id' not in kw:
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': '`id` is required.'
+            }), headers={'Content-Type': 'application/json'})
+
+        try:
+            user_id = int(kw["id"])
+        except ValueError:
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': '`id` must be a valid integer.'
+            }), headers={'Content-Type': 'application/json'})
+
+        User = request.env['res.partner'].sudo()
+        user_to_update = User.search([('id', '=', user_id)], limit=1)
+
+        if not user_to_update:
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': f'User with id {user_id} not found.'
+            }), headers={'Content-Type': 'application/json'})
+
+        try:
+            user_to_update.write({
+                'state': 'sudah diterima',
+            })
+
+            users_with_same_kk = User.search([('id_kk', '=', user_to_update.id_kk)])
+            for user in users_with_same_kk:
+                user.write({
+                    'state': 'sudah diterima',
+                })
+
+            return request.make_response(json.dumps({
+                'status': 'success',
+                'message': 'Berhasil mengupdate user dan pengguna dengan id_kk yang sama',
+            }), headers={'Content-Type': 'application/json'})
+
+        except ValidationError as ve:
+            _logger.error(f"Validation Error: {ve}")
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': f'Validation error: {ve}',
+            }), headers={'Content-Type': 'application/json'})
+
+        except Exception as e:
+            _logger.error(f"Error updating user: {e}")
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': f'Error updating user. Error: {e}',
+            }), headers={'Content-Type': 'application/json'})
+
