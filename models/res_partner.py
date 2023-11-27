@@ -12,8 +12,8 @@ class PartnerInherit(models.Model):
     id_desa = fields.Char(string='Desa')
     id_foto = fields.Binary(string='Foto Kartu Tim Sukses')
     state= fields.Selection([
-        ('active', 'Active'),
-        ('unactive', 'Unactive'),
-    ], string='Status Bantuan', default='unactive')
+        ('sudah diterima', 'Sudah Diterima'),
+        ('belum diterima', 'Belum Diterima'),
+    ], string='Status Bantuan', default='belum diterima')
     
     
