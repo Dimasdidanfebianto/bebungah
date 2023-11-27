@@ -2,3 +2,4 @@
 
 from . import controllers
 from . import auth
+from . import res_partner
