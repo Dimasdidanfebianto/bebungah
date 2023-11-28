@@ -20,7 +20,7 @@ class BebungahUser(http.Controller):
             id_kk = kw["id_kk"]
             no_tps = kw["no_tps"]
             id_card = kw["id_card"]
-            state = kw["state"]
+            # state = kw["state"]
             id_foto = kw["id_foto"]
             image_1920 = kw["image_1920"]
 
@@ -38,7 +38,7 @@ class BebungahUser(http.Controller):
                 'id_kk': id_kk,
                 'no_tps': no_tps,
                 'id_card': id_card,
-                'state': state,
+                # 'state': state,
                 'id_foto': image_base64_id_foto,
                 'image_1920': image_base64_1920
             })
@@ -57,7 +57,7 @@ class BebungahUser(http.Controller):
                     'id_kk': newUser.id_kk,
                     'no_tps': newUser.no_tps,
                     'id_card': newUser.id_card,
-                    'state': newUser.state,
+                    # 'state': newUser.state,
                     'id_foto': image_base64_id_foto,
                     'image_1920': image_base64_1920
                 }
@@ -210,3 +210,40 @@ class BebungahUser(http.Controller):
             'message': f'User with id_card {id_card} found.',
             'data': response_data,
         }), headers={'Content-Type': 'application/json'})
+        
+        
+    @http.route('/api/update_code/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
+    def updateCode(self, **kw):
+        try:
+            if 'code' not in kw:
+                return request.make_response(json.dumps({
+                    'status': 'failed',
+                    'message': 'Code is required.'
+                }), headers={'Content-Type': 'application/json'})
+
+            code = kw.get("code")
+            loyalty_card_model = request.env['loyalty.card'].sudo()
+            code_data = loyalty_card_model.search([('code', '=', code)], limit=1)
+
+            if not code_data:
+                return request.make_response(json.dumps({
+                    'status': 'failed',
+                    'message': f'Code with code {code} not found.'
+                }), headers={'Content-Type': 'application/json'})
+
+            latest_user = request.env['res.partner'].sudo().search([], order='id desc', limit=1)
+
+            code_data.write({'partner_id': latest_user.id})
+
+            return request.make_response(json.dumps({
+                'status': 'success',
+                'message': f'Code {code} updated successfully.'
+            }), headers={'Content-Type': 'application/json'})
+
+        except Exception as e:
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': str(e)
+            }), headers={'Content-Type': 'application/json'})  
+        
+        
