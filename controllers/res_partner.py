@@ -169,4 +169,44 @@ class BebungahUser(http.Controller):
                 'status': 'failed',
                 'message': f'Error updating user. Error: {e}',
             }), headers={'Content-Type': 'application/json'})
+            
+            
+    @http.route('/api/get_user/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
+    def getUseridCard(self, **kw):
+        if 'id_card' not in kw:
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': 'id_card is required'
+            }), headers={'Content-Type': 'application/json'})
 
+        id_card = kw['id_card']
+        User = request.env['res.partner'].sudo()
+        user_data = User.search([('id_card', '=', id_card)], limit=1)
+
+        if not user_data:
+            return request.make_response(json.dumps({
+                'status': 'failed',
+                'message': f'User with id_card {id_card} not found.'
+            }), headers={'Content-Type': 'application/json'})
+
+        user_data = user_data[0]
+
+        response_data = {
+            'id': user_data.id,
+            'name': user_data.name,
+            'phone': user_data.phone,
+            'street': user_data.street,
+            'no_ktp': user_data.no_ktp,
+            'id_desa': user_data.id_desa,
+            'id_kecamatan': user_data.id_kecamatan,
+            'id_kk': user_data.id_kk,
+            'no_tps': user_data.no_tps,
+            'id_card': user_data.id_card,
+            'state': user_data.state,
+        }
+
+        return request.make_response(json.dumps({
+            'status': 'success',
+            'message': f'User with id_card {id_card} found.',
+            'data': response_data,
+        }), headers={'Content-Type': 'application/json'})
