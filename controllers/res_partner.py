@@ -215,13 +215,15 @@ class BebungahUser(http.Controller):
     @http.route('/api/update_code/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def updateCode(self, **kw):
         try:
-            if 'code' not in kw:
+            if 'code' not in kw or 'partner_id' not in kw:
                 return request.make_response(json.dumps({
                     'status': 'failed',
-                    'message': 'Code is required.'
+                    'message': 'Both code and partner_id are required.'
                 }), headers={'Content-Type': 'application/json'})
 
             code = kw.get("code")
+            partner_id = int(kw["partner_id"])
+
             loyalty_card_model = request.env['loyalty.card'].sudo()
             code_data = loyalty_card_model.search([('code', '=', code)], limit=1)
 
@@ -231,19 +233,28 @@ class BebungahUser(http.Controller):
                     'message': f'Code with code {code} not found.'
                 }), headers={'Content-Type': 'application/json'})
 
-            latest_user = request.env['res.partner'].sudo().search([], order='id desc', limit=1)
+            partner_model = request.env['res.partner'].sudo()
+            partner = partner_model.browse(partner_id)
+            if not partner:
+                return request.make_response(json.dumps({
+                    'status': 'failed',
+                    'message': f'Partner with ID {partner_id} not found.'
+                }), headers={'Content-Type': 'application/json'})
 
-            code_data.write({'partner_id': latest_user.id})
+            code_data.write({'partner_id': partner.id})
+            
+            partner.write({'state': 'sudah diterima'})
 
             return request.make_response(json.dumps({
                 'status': 'success',
-                'message': f'Code {code} updated successfully.'
+                'message': f'Code {code} updated successfully for partner {partner.name}.'
             }), headers={'Content-Type': 'application/json'})
 
         except Exception as e:
             return request.make_response(json.dumps({
                 'status': 'failed',
                 'message': str(e)
-            }), headers={'Content-Type': 'application/json'})  
+            }), headers={'Content-Type': 'application/json'})
+
         
         
