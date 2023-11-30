@@ -11,6 +11,10 @@ class PartnerInherit(models.Model):
     id_kecamatan = fields.Char(string='Kecamatan')
     id_desa = fields.Char(string='Desa')
     id_foto = fields.Binary(string='Foto Kartu Tim Sukses')
+    state_card = fields.Selection([
+        ('aktif', 'Aktif'),
+        ('belum aktif', 'Belum Aktif'),
+    ], string='Status Kartu Tim Sukses', default='belum aktif')
     state= fields.Selection([
         ('sudah diterima', 'Sudah Diterima'),
         ('belum diterima', 'Belum Diterima'),

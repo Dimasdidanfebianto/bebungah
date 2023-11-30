@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <record id="res_partner_inherit_view_form" model="ir.ui.view">
-    <field name="name">res.partner.view.form.inherit.easykop</field>
+    <field name="name">res.partner.view.form.inherit.bebungah</field>
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form" />
     <field name="arch" type="xml">
@@ -14,7 +14,8 @@
           <field name="id_kecamatan" placeholder="Nama Kecamatan" />
           <field name="id_card" placeholder="No Seri Kartu" />
           <field name="id_foto" placeholder="Foto Profile" />
-          <field name="state" placeholder="Status" />
+          <field name="state_card" placeholder="Status Kartu Tim Sukses" />
+          <field name="state" placeholder="Status" /> 
         </xpath>
       </data>
     </field>
