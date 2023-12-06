@@ -12,10 +12,14 @@
           <field name="no_tps" placeholder="No TPS" />
           <field name="id_desa" placeholder="Nama Desa" />
           <field name="id_kecamatan" placeholder="Nama Kecamatan" />
-          <field name="id_card" placeholder="No Seri Kartu" />
-          <field name="id_foto" placeholder="Foto Profile" />
+          <field name="id_card" placeholder="No Seri Kartu" />         
+        </xpath>
+        <xpath expr="//field[@name='category_id']" position="after">
           <field name="state_card" placeholder="Status Kartu Tim Sukses" />
           <field name="state" placeholder="Status" /> 
+          <field name="state_pilih" placeholder="Status Pemilihan" />
+          <field name="code_minigold" placeholder="Kode Minigold" />
+          <field name="id_foto" placeholder="Foto Profile" />
         </xpath>
       </data>
     </field>
