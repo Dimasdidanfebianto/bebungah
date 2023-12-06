@@ -1,14 +1,16 @@
 from odoo import models, fields ,api
 from odoo.exceptions import ValidationError
-
-
-
 class PartnerInherit(models.Model):
     _inherit = 'res.partner'
     
     id_card = fields.Char(string='No Seri Kartu Tim Sukses')
     id_kk = fields.Char(string='No Kartu Keluarga')
     no_ktp = fields.Char(string='No KTP')
+    code_minigold = fields.Char(string='Kode Minigold')
+    state_pilih = fields.Selection([
+        ('sudah memilih', 'Sudah Memilih'),
+        ('belum memilih', 'Belum Memilih'),
+    ], string='Status Pemilihan', default='belum memilih')
     id_kecamatan = fields.Selection([
         ('',' - Pilih - '),
         ('pekuncen','Pekuncen'),
