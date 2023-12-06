@@ -26,6 +26,13 @@ class BebungahUser(http.Controller):
 
             image_base64_1920 = base64.b64encode(image_1920.read()).decode('utf-8') if image_1920 else None
             image_base64_id_foto = base64.b64encode(id_foto.read()).decode('utf-8') if id_foto else None
+            
+            existing_user = request.env['res.partner'].sudo().search([('no_ktp', '=', no_ktp)])
+            if existing_user:
+                return request.make_response(json.dumps({
+                    'status': 'failed',
+                    'message': 'User with same no ktp already exists.'
+                }), headers={'Content-Type': 'application/json'})
 
             User = request.env['res.partner'].sudo()
             newUser = User.create({
@@ -100,6 +107,7 @@ class BebungahUser(http.Controller):
                     'no_tps': user.no_tps,
                     'id_card': user.id_card,
                     'state': user.state,
+                    'state_card': user.state_card,
                     
                 })
 
@@ -213,41 +221,41 @@ class BebungahUser(http.Controller):
         
         
     @http.route('/api/update_code/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
-    def updateCode(self, **kw):
+    def createCode(self, **kw):
         try:
-            if 'code' not in kw or 'partner_id' not in kw:
+            if 'partner_id' not in kw or 'code' not in kw:
                 return request.make_response(json.dumps({
                     'status': 'failed',
-                    'message': 'Both code and partner_id are required.'
+                    'message': 'partner_id dan code diperlukan.'
                 }), headers={'Content-Type': 'application/json'})
 
-            code = kw.get("code")
             partner_id = int(kw["partner_id"])
-
-            loyalty_card_model = request.env['loyalty.card'].sudo()
-            code_data = loyalty_card_model.search([('code', '=', code)], limit=1)
-
-            if not code_data:
-                return request.make_response(json.dumps({
-                    'status': 'failed',
-                    'message': f'Code with code {code} not found.'
-                }), headers={'Content-Type': 'application/json'})
+            code_value = kw["code"]
 
             partner_model = request.env['res.partner'].sudo()
             partner = partner_model.browse(partner_id)
+
             if not partner:
+                partner = partner_model.sudo().create({'id': partner_id})
+
+            existing_card = request.env['loyalty.card'].sudo().search([('code', '=', code_value)])
+            if existing_card:
                 return request.make_response(json.dumps({
                     'status': 'failed',
-                    'message': f'Partner with ID {partner_id} not found.'
+                    'message': f'Kode {code_value} sudah ada dalam sistem.'
                 }), headers={'Content-Type': 'application/json'})
 
-            code_data.write({'partner_id': partner.id})
-            
-            partner.write({'state': 'sudah diterima'})
+            loyalty_card_data = {
+                'partner_id': partner.id,
+                'code': code_value,
+            }
+            new_loyalty_card = request.env['loyalty.card'].sudo().create(loyalty_card_data)
+
+            partner.sudo().write({'state': 'sudah diterima'})
 
             return request.make_response(json.dumps({
                 'status': 'success',
-                'message': f'Code {code} updated successfully for partner {partner.name}.'
+                'message': f'Loyalty card dengan voucher baru {code_value} berhasil dibuat untuk partner {partner.name}.'
             }), headers={'Content-Type': 'application/json'})
 
         except Exception as e:
@@ -255,6 +263,7 @@ class BebungahUser(http.Controller):
                 'status': 'failed',
                 'message': str(e)
             }), headers={'Content-Type': 'application/json'})
+
 
         
         
