@@ -1,4 +1,6 @@
 from odoo import models, fields ,api
+from odoo.exceptions import ValidationError
+
 
 
 class PartnerInherit(models.Model):
@@ -115,5 +117,13 @@ class PartnerInherit(models.Model):
         ('sudah diterima', 'Sudah Diterima'),
         ('belum diterima', 'Belum Diterima'),
     ], string='Status Bantuan', default='belum diterima')
+    
+    @api.constrains('no_ktp')
+    def _check_unique_no_ktp(self):
+        for record in self:
+            existing_record = self.search([('no_ktp', '=', record.no_ktp)])
+            if len(existing_record) > 1:
+                raise ValidationError('No KTP already exists.')
+    
     
    
