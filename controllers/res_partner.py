@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import math
 from odoo import http
 from odoo.http import request
 from odoo.exceptions import ValidationError
@@ -20,7 +21,6 @@ class BebungahUser(http.Controller):
             id_kk = kw["id_kk"]
             no_tps = kw["no_tps"]
             id_card = kw["id_card"]
-            # state = kw["state"]
             id_foto = kw["id_foto"]
             image_1920 = kw["image_1920"]
 
@@ -45,7 +45,6 @@ class BebungahUser(http.Controller):
                 'id_kk': id_kk,
                 'no_tps': no_tps,
                 'id_card': id_card,
-                # 'state': state,
                 'id_foto': image_base64_id_foto,
                 'image_1920': image_base64_1920
             })
@@ -64,7 +63,6 @@ class BebungahUser(http.Controller):
                     'id_kk': newUser.id_kk,
                     'no_tps': newUser.no_tps,
                     'id_card': newUser.id_card,
-                    # 'state': newUser.state,
                     'id_foto': image_base64_id_foto,
                     'image_1920': image_base64_1920
                 }
@@ -91,7 +89,20 @@ class BebungahUser(http.Controller):
     def get_all_users(self, **kw):
         try:
             User = request.env['res.partner'].sudo()
-            users = User.search([])
+
+            page = int(kw.get('page', 1))
+            limit = int(kw.get('limit', 20)) 
+
+            try:
+                page = max(page, 1)
+                limit = max(limit, 1)
+            except ValueError:
+                page = 1
+                limit = 10
+
+            offset = (page - 1) * limit
+
+            users = User.search([], offset=offset, limit=limit)
 
             user_data = []
             for user in users:
@@ -108,13 +119,23 @@ class BebungahUser(http.Controller):
                     'id_card': user.id_card,
                     'state': user.state,
                     'state_card': user.state_card,
-                    
                 })
+
+            total_count = User.search_count([])
+
+            total_pages = math.ceil(total_count / limit)
+
+            meta = {
+                'page': page,
+                'limit': limit,
+                'total_pages': total_pages,
+            }
 
             return request.make_response(json.dumps({
                 'status': 'success',
-                'message': 'Berhasil mendapatkan  data semua user',
+                'message': 'Berhasil mendapatkan data semua user',
                 'data': user_data,
+                'meta': meta
             }), headers={'Content-Type': 'application/json'})
 
         except Exception as e:
@@ -122,61 +143,33 @@ class BebungahUser(http.Controller):
                 'status': 'failed',
                 'message': f'Error: {e}',
             }), headers={'Content-Type': 'application/json'})
+
             
     @http.route('/api/update_user', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def updateUser(self, **kw):
-        if 'id' not in kw:
-            return request.make_response(json.dumps({
-                'status': 'failed',
-                'message': '`id` is required.'
-            }), headers={'Content-Type': 'application/json'})
+        if 'code_minigold' not in kw:
+            return self.error_response('`code_minigold` is required.')
 
         try:
-            user_id = int(kw["id"])
-        except ValueError:
-            return request.make_response(json.dumps({
-                'status': 'failed',
-                'message': '`id` must be a valid integer.'
-            }), headers={'Content-Type': 'application/json'})
+            minigold = request.env['res.partner'].sudo()
+            user_to_update = minigold.search([('code_minigold', '=', kw['code_minigold'])], limit=1)
 
-        User = request.env['res.partner'].sudo()
-        user_to_update = User.search([('id', '=', user_id)], limit=1)
+            if not user_to_update:
+                return self.error_response(f'User with code_minigold {kw["code_minigold"]} not found.')
 
-        if not user_to_update:
-            return request.make_response(json.dumps({
-                'status': 'failed',
-                'message': f'User with id {user_id} not found.'
-            }), headers={'Content-Type': 'application/json'})
-
-        try:
             user_to_update.write({
-                'state': 'sudah diterima',
+                'state_pilih': 'sudah memilih',
             })
 
-            users_with_same_kk = User.search([('id_kk', '=', user_to_update.id_kk)])
-            for user in users_with_same_kk:
-                user.write({
-                    'state': 'sudah diterima',
-                })
-
-            return request.make_response(json.dumps({
-                'status': 'success',
-                'message': 'Berhasil mengupdate user dan pengguna dengan id_kk yang sama',
-            }), headers={'Content-Type': 'application/json'})
+            return self.success_response('Berhasil mengupdate user.')
 
         except ValidationError as ve:
             _logger.error(f"Validation Error: {ve}")
-            return request.make_response(json.dumps({
-                'status': 'failed',
-                'message': f'Validation error: {ve}',
-            }), headers={'Content-Type': 'application/json'})
+            return self.error_response(f'Validation error: {ve}')
 
         except Exception as e:
             _logger.error(f"Error updating user: {e}")
-            return request.make_response(json.dumps({
-                'status': 'failed',
-                'message': f'Error updating user. Error: {e}',
-            }), headers={'Content-Type': 'application/json'})
+            return self.error_response(f'Error updating user. Error: {e}')
             
             
     @http.route('/api/get_user/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
@@ -211,6 +204,8 @@ class BebungahUser(http.Controller):
             'no_tps': user_data.no_tps,
             'id_card': user_data.id_card,
             'state': user_data.state,
+            'state_card': user_data.state_card,
+            'state_pilih': user_data.state_pilih,
         }
 
         return request.make_response(json.dumps({
@@ -225,11 +220,12 @@ class BebungahUser(http.Controller):
         try:
             if 'new_code' not in kw or 'partner_id' not in kw:
                 return self.error_response('new_code dan partner_id diperlukan.')
-            
+
             new_code_value = kw["new_code"]
             partner_id = int(kw["partner_id"])
 
             code_number = partner_id
+            
 
             existing_card = request.env['loyalty.card'].sudo().search([('id', '=', code_number)])
             if not existing_card:
@@ -241,7 +237,7 @@ class BebungahUser(http.Controller):
                 return self.error_response(f'Partner dengan id {partner_id} tidak ditemukan.')
 
             existing_card.write({'partner_id': partner.id})
-            partner.write({'state_card': 'aktif'})
+            partner.sudo().write({'code_minigold': new_code_value, 'state_card': 'aktif'})
             return self.success_response(f'Informasi kartu loyalitas dengan nomor urut {code_number} berhasil diupdate dengan kode baru {new_code_value}.')
 
         except Exception as e:
@@ -258,6 +254,13 @@ class BebungahUser(http.Controller):
             'status': 'success',
             'message': message
         }), headers={'Content-Type': 'application/json'})
+        
+
+        
+         
+
+        
+        
 
 
             
