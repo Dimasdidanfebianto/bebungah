@@ -105,7 +105,8 @@ class BebungahUser(http.Controller):
 
             offset = (page - 1) * limit
 
-            users = User.search([], offset=offset, limit=limit)
+            users = User.search([('id_kk', '=', kw.get('id_kk', False))], offset=offset, limit=limit)
+
 
             user_data = []
             for user in users:
@@ -228,6 +229,7 @@ class BebungahUser(http.Controller):
 
             new_code_value = kw["new_code"]
             partner_id = int(kw["partner_id"])
+            new_id_card = kw["id_card"]
 
             code_number = partner_id
             
@@ -242,7 +244,7 @@ class BebungahUser(http.Controller):
                 return self.error_response(f'Partner dengan id {partner_id} tidak ditemukan.')
 
             existing_card.write({'partner_id': partner.id})
-            partner.sudo().write({'code_minigold': new_code_value, 'state_card': 'aktif'})
+            partner.sudo().write({'code_minigold': new_code_value, 'state_card': 'aktif', 'id_card': new_id_card})
             return self.success_response(f'Informasi kartu loyalitas dengan nomor urut {code_number} berhasil diupdate dengan kode baru {new_code_value}.')
 
         except Exception as e:
