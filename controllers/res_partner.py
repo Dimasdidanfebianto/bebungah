@@ -8,6 +8,7 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+#api untuk REGISTRASI 
 class BebungahUser(http.Controller):
     @http.route('/api/create', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def userCreate(self, **kw):
@@ -85,6 +86,8 @@ class BebungahUser(http.Controller):
                 
             return None
         
+        
+    #ENDPOINT UNTUK GET ALL USER   
     @http.route('/api/get_all_users', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def get_all_users(self, **kw):
         try:
@@ -119,6 +122,8 @@ class BebungahUser(http.Controller):
                     'id_card': user.id_card,
                     'state': user.state,
                     'state_card': user.state_card,
+                    'state_pilih': user.state_pilih,
+                    'code_minigold': user.code_minigold
                 })
 
             total_count = User.search_count([])
@@ -144,7 +149,7 @@ class BebungahUser(http.Controller):
                 'message': f'Error: {e}',
             }), headers={'Content-Type': 'application/json'})
 
-            
+    #ENDPOINT UNTUK UPDATE STATUS PEMILIH USER        
     @http.route('/api/update_user', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def updateUser(self, **kw):
         if 'code_minigold' not in kw:
@@ -171,7 +176,7 @@ class BebungahUser(http.Controller):
             _logger.error(f"Error updating user: {e}")
             return self.error_response(f'Error updating user. Error: {e}')
             
-            
+     #ENDPOINT UNTUK GET USER BY ID_CARD       
     @http.route('/api/get_user/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def getUseridCard(self, **kw):
         if 'id_card' not in kw:
@@ -214,7 +219,7 @@ class BebungahUser(http.Controller):
             'data': response_data,
         }), headers={'Content-Type': 'application/json'})
         
-        
+    #ENDPOINT UNTUK UPDATE KODE MINIGOLD DAN DIJADIKAN KODE GIFTCARD    
     @http.route('/api/update_code/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def updateCode(self, **kw):
         try:
@@ -254,6 +259,35 @@ class BebungahUser(http.Controller):
             'status': 'success',
             'message': message
         }), headers={'Content-Type': 'application/json'})
+        
+     #ENDPOINT UNTUK UPDATE BANTUAN    
+    @http.route('/api/update_bantuan/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
+    def updateBantuan(self, **kw):
+        if 'code_minigold' not in kw:
+            return self.error_response('`code_minigold` is required.')
+
+        try:
+            minigold = request.env['res.partner'].sudo()
+            user_to_update = minigold.search([('code_minigold', '=', kw['code_minigold'])], limit=1)
+
+            if not user_to_update:
+                return self.error_response(f'User with code_minigold {kw["code_minigold"]} not found.')
+
+            user_to_update.write({
+                'state': 'sudah diterima',
+            })
+
+            return self.success_response('Berhasil mengupdate user.')
+
+        except ValidationError as ve:
+            _logger.error(f"Validation Error: {ve}")
+            return self.error_response(f'Validation error: {ve}')
+
+        except Exception as e:
+            _logger.error(f"Error updating user: {e}")
+            return self.error_response(f'Error updating user. Error: {e}')
+                
+            
         
 
         
