@@ -105,7 +105,10 @@ class BebungahUser(http.Controller):
 
             offset = (page - 1) * limit
 
-            users = User.search([('id_kk', '=', kw.get('id_kk', False))], offset=offset, limit=limit)
+            id_kk = kw.get('id_kk', False)
+            domain = [('id_kk', '=', id_kk)] if id_kk else []
+            users = User.search(domain, offset=offset, limit=limit)
+
 
 
             user_data = []
