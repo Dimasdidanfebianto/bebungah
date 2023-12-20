@@ -223,47 +223,6 @@ class BebungahUser(http.Controller):
             'data': response_data,
         }), headers={'Content-Type': 'application/json'})
         
-    #ENDPOINT UNTUK UPDATE KODE MINIGOLD DAN DIJADIKAN KODE GIFTCARD    
-    @http.route('/api/update_code/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
-    def updateCode(self, **kw):
-        try:
-            if 'new_code' not in kw or 'partner_id' not in kw:
-                return self.error_response('new_code dan partner_id diperlukan.')
-
-            new_code_value = kw["new_code"]
-            partner_id = int(kw["partner_id"])
-            new_id_card = kw["id_card"]
-
-            code_number = partner_id
-            
-
-            existing_card = request.env['loyalty.card'].sudo().search([('id', '=', code_number)])
-            if not existing_card:
-                return self.error_response(f'Nomor urut {code_number} tidak ditemukan dalam sistem.')
-
-            existing_card.sudo().write({'code': new_code_value})
-            partner = request.env['res.partner'].sudo().browse(partner_id)
-            if not partner:
-                return self.error_response(f'Partner dengan id {partner_id} tidak ditemukan.')
-
-            existing_card.write({'partner_id': partner.id})
-            partner.sudo().write({'code_minigold': new_code_value, 'state_card': 'aktif', 'id_card': new_id_card})
-            return self.success_response(f'Informasi kartu loyalitas dengan nomor urut {code_number} berhasil diupdate dengan kode baru {new_code_value}.')
-
-        except Exception as e:
-            return self.error_response(str(e))
-
-    def error_response(self, message):
-        return http.request.make_response(json.dumps({
-            'status': 'failed',
-            'message': message
-        }), headers={'Content-Type': 'application/json'})
-
-    def success_response(self, message):
-        return http.request.make_response(json.dumps({
-            'status': 'success',
-            'message': message
-        }), headers={'Content-Type': 'application/json'})
         
      #ENDPOINT UNTUK UPDATE BANTUAN    
     @http.route('/api/update_bantuan/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
