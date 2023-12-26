@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import math
-from odoo import http
+from odoo import http, _
 from odoo.http import request
 from odoo.exceptions import ValidationError
 
@@ -76,7 +76,6 @@ class BebungahUser(http.Controller):
                 'message': f'Error creating user. Error: {e}',
             }), headers={'Content-Type': 'application/json'})
 
-
     def convert_image_to_base64(self, image):
         try:
             encoded_image = base64.b64encode(image.read())
@@ -92,7 +91,6 @@ class BebungahUser(http.Controller):
     def get_all_users(self, **kw):
         try:
             User = request.env['res.partner'].sudo()
-
             page = int(kw.get('page', 1))
             limit = int(kw.get('limit', 20)) 
 
@@ -108,9 +106,7 @@ class BebungahUser(http.Controller):
             id_kk = kw.get('id_kk', False)
             domain = [('id_kk', '=', id_kk)] if id_kk else []
             users = User.search(domain, offset=offset, limit=limit)
-
-
-
+            
             user_data = []
             for user in users:
                 user_data.append({
@@ -160,8 +156,8 @@ class BebungahUser(http.Controller):
             return self.error_response('`code_minigold` is required.')
 
         try:
-            minigold = request.env['res.partner'].sudo()
-            user_to_update = minigold.search([('code_minigold', '=', kw['code_minigold'])], limit=1)
+            partner_model = http.request.env['res.partner']
+            user_to_update = partner_model.search([('code_minigold', '=', kw['code_minigold'])], limit=1)
 
             if not user_to_update:
                 return self.error_response(f'User with code_minigold {kw["code_minigold"]} not found.')
@@ -174,11 +170,25 @@ class BebungahUser(http.Controller):
 
         except ValidationError as ve:
             _logger.error(f"Validation Error: {ve}")
-            return self.error_response(f'Validation error: {ve}')
+            return self.error_response(f'Validation error: {ve.name} - {ve.value}')
 
         except Exception as e:
             _logger.error(f"Error updating user: {e}")
             return self.error_response(f'Error updating user. Error: {e}')
+
+    def success_response(self, message):
+        return http.Response(
+            json.dumps({'success': True, 'message': message}),
+            content_type='application/json;charset=utf-8',
+            status=200
+        )
+
+    def error_response(self, error_message):
+        return http.Response(
+            json.dumps({'success': False, 'error': error_message}),
+            content_type='application/json;charset=utf-8',
+            status=400  # Sesuaikan dengan kebutuhan Anda
+        )
             
      #ENDPOINT UNTUK GET USER BY ID_CARD       
     @http.route('/api/get_user/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
