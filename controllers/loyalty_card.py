@@ -2,7 +2,7 @@ import json
 from odoo import http
 from odoo.http import request
 
-class BerbungahCard(http.Controller):  # Fix typo: Change 'htpp' to 'http' and 'controller' to 'Controller'
+class BerbungahCard(http.Controller): 
     @http.route('/api/loyalty_card/', auth='user', methods=["POST"], csrf=False, cors="*", website=False)
     def get_all_card(self, **kw):
         try:
@@ -14,8 +14,6 @@ class BerbungahCard(http.Controller):  # Fix typo: Change 'htpp' to 'http' and '
                     'program_id': card.id,
                     'code': card.code,
                     'partner_id': card.partner_id.id,
-                    
-                
                 })
             return http.request.make_response(json.dumps(card_data), headers={'Content-Type': 'application/json'})
         
@@ -31,9 +29,7 @@ class BerbungahCard(http.Controller):  # Fix typo: Change 'htpp' to 'http' and '
             new_code_value = kw["new_code"]
             partner_id = int(kw["partner_id"])
             new_id_card = kw["id_card"]
-
             Card = request.env['loyalty.card'].sudo()
-
             card = Card.search([('partner_id', '=', False)], limit=1)
 
             if not card:
