@@ -28,7 +28,7 @@ class BerbungahCard(http.Controller):
             
             new_code_value = kw["new_code"]
             partner_id = int(kw["partner_id"])
-            new_id_card = kw["id_card"]
+            
             Card = request.env['loyalty.card'].sudo()
             card = Card.search([('partner_id', '=', False)], limit=1)
 
@@ -41,7 +41,7 @@ class BerbungahCard(http.Controller):
             card.write({'partner_id': partner_id, 'code': new_code_value})
 
             partner = card.partner_id 
-            partner.sudo().write({'code_minigold': new_code_value, 'state_card': 'aktif', 'id_card': new_id_card})
+            partner.sudo().write({'code_minigold': new_code_value, 'state_card': 'aktif', 'id_card': new_code_value})
 
             card_data = {
                 'program_id': card.id,
