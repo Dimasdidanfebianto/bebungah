@@ -1,6 +1,21 @@
-from odoo import models, fields ,api
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-class PartnerInherit(models.Model):
+
+class ResPartnerKabupaten(models.Model):
+    _name = 'res.partner.kabupaten'
+    _description = 'Kabupaten'
+
+    name = fields.Char(string='Nama Kabupaten', required=True)
+    kecamatan_ids = fields.One2many('res.partner.kecamatan', 'kabupaten_id', string='Kecamatans')
+
+class ResPartnerKecamatan(models.Model):
+    _name = 'res.partner.kecamatan'
+    _description = 'Kecamatan'
+
+    name = fields.Char(string='Nama Kecamatan', required=True)
+    kabupaten_id = fields.Many2one('res.partner.kabupaten', string='Kabupaten')
+
+class ResPartner(models.Model):
     _inherit = 'res.partner'
     
     id_card = fields.Char(string='No Seri Kartu Tim Sukses')
@@ -11,169 +26,11 @@ class PartnerInherit(models.Model):
         ('sudah memilih', 'Sudah Memilih'),
         ('belum memilih', 'Belum Memilih'),
     ], string='Status Pemilihan', default='belum memilih')
-    id_kecamatan = fields.Selection([
-        ('',' - Pilih - '),
-        ('pekuncen','Pekuncen'),
-        ('ajibarang','Ajibarang'),
-        ('gumelar','Gumelar'),
-        ('lumbir','Lumbir'),
-        ],string='Kecamatan', default='')
-    no_tps = fields.Selection([
-        ('',' - Pilih - '),
-        ('01',' 01'),
-        ('02',' 02'),
-        ('03',' 03'),
-        ('04',' 04'),
-        ('05',' 05'),
-        ('06',' 06'),
-        ('07',' 07'),
-        ('08',' 08'),
-        ('09',' 09'),
-        ('10',' 10'),
-        ('11',' 11'),
-        ('12',' 12'),
-        ('13',' 13'),
-        ('14',' 14'),
-        ('15',' 15'),
-        ('16',' 16'),
-        ('17',' 17'),
-        ('18',' 18'),
-        ('19',' 19'),
-        ('20',' 20'),
-        ('21',' 21'),
-        ('22',' 22'),
-        ('23',' 23'),
-        ('24',' 24'),
-        ('25',' 25'),
-        ('26',' 26'),
-        ('27',' 27'),
-        ('28',' 28'),
-        ('29',' 29'),
-        ('30',' 30'),
-        ('31',' 31'),
-        ('32',' 32'),
-        ('33',' 33'),
-        ('34',' 34'),
-        ('35',' 35'),
-        ('36',' 36'),
-        ('37',' 37'),
-        ('38',' 38'),
-        ('39',' 39'),
-        ('40',' 40'),
-        ('41',' 41'),
-        ('42',' 42'),
-        ('43',' 43'),
-        ('44',' 44'),
-        ('45',' 45'),
-        ('46',' 46'),
-        ('47',' 47'),
-        ('48',' 48'),
-        ('49',' 49'),
-        ('50',' 50'),
-        ('51',' 51'),
-        ('52',' 52'),
-        ('53',' 53'),
-        ('54',' 54'),
-        ('55',' 55'),
-        ('56',' 56'),
-        ('57',' 57'),
-        ('58',' 58'),
-        ('59',' 59'),
-        ('60',' 60'),
-        ('61',' 61'),
-        ('62',' 62'),
-        ('63',' 63'),
-        ('64',' 64'),
-        ('65',' 65'),
-        ('66',' 66'),
-        ('67',' 67'),
-        ('68',' 68'),
-        ('69',' 69'),
-        ('70',' 70'),
-        ('71',' 71'),
-        ('72',' 72'),
-        ('73',' 73'),
-        ('74',' 74'),
-        ('75',' 75'),
-        ('76',' 76'),
-        ('77',' 77'),
-        ('78',' 78'),
-        ('79',' 79'),
-        ('80',' 80'),
-        ('81',' 81'),
-        ('82',' 82'),
-        ('83',' 83'),
-        ('84',' 84'),
-        ('85',' 85'),
-        ('86',' 86'),
-        ('87',' 87'),
-        ('88',' 88'),
-        ('89',' 89'),
-        ('90',' 90'),
-        ('91',' 91'),
-        ('92',' 92'),
-        ('93',' 93'),
-        ('94',' 94'),
-        ('95',' 95'),
-        ('96',' 96'),
-        ('97',' 97'),
-        ('98',' 98'),
-        ('99',' 99'),
+    kabupaten_id = fields.Many2one('res.partner.kabupaten', string='Kabupaten')
+    kecamatan_id = fields.Many2one('res.partner.kecamatan', string='Kecamatan')
+    no_tps = fields.Char(string='No TPS')
         
-    ], string='No TPS', default='')
-    id_desa = fields.Selection([
-        ('',' - Pilih - '),
-        ('ajibarang kulon',' Ajibarang Kulon'),
-        ('ajibarang wetan',' Ajibarang Wetan'),
-        ('banjarsari',' Banjarsari'),
-        ('ciberung',' Ciberung'),
-        ('darmakradenan',' Darmakradenan'),
-        ('jingkang',' Jingkang'),
-        ('kalibenda',' Kalibenda'),
-        ('karangbawang',' Karangbawang'),
-        ('kracak',' Kracak'),
-        ('lesmana',' Lesmana'),
-        ('pancasan',' Pancasan'),
-        ('pandansari',' Pandansari'),
-        ('sawangan',' Sawangan'),
-        ('tipar kidul',' Tipar Kidul'),
-        ('parakan',' Parakan'),
-        ('banjaranyar',' Banjaranyar'),
-        ('candinegara',' Candinegara'),
-        ('cibangkong',' Cibangkong'),
-        ('cikembulan',' Cikembulan'),
-        ('glempang',' Glempang'),
-        ('karangkemiri',' Karangkemiri'),
-        ('karangklesem',' Karangklesem'),
-        ('krajan',' Krajan'),
-        ('kranggan',' Kranggan'),
-        ('pasiraman kidul',' Pasiraman Kidul'),
-        ('pasiraman lor',' Pasiraman Lor'),
-        ('pekuncen',' Pekuncen'),
-        ('petahunan',' Petahunan'),
-        ('semedo',' Semedo'),
-        ('tumiyang',' Tumiyang'),
-        ('cihonje',' Cihonje'),
-        ('cilangkap',' Cilangkap'),
-        ('gancang',' Gancang'),
-        ('gumelar',' Gumelar'),
-        ('karangkemojing',' Karangkemojing'),
-        ('kedungurang',' Kedungurang'),
-        ('paningkaban',' Paningkaban'),
-        ('samudra',' Samudra'),
-        ('samudra kulon',' Samudra Kulon'),
-        ('tlaga',' Tlaga'),
-        ('besuki',' Besuki'),
-        ('canduk',' Canduk'),
-        ('cidora',' Cidora'),
-        ('cingebul',' Cingebul'),
-        ('cirahab',' Cirahab'),
-        ('dermaji',' Dermaji'),
-        ('karanggayam',' Karanggayam'),
-        ('kedunggede',' Kedunggede'),
-        ('lumbir',' Lumbir'),
-        ('parungkamal',' Parungkamal'),
-        ], string='Desa', default='')
+    id_desa = fields.Char(string='Nama Desa')
     id_foto = fields.Binary(string='Foto Kartu Tim Sukses')
     state_card = fields.Selection([
         ('aktif', 'Aktif'),
@@ -190,6 +47,3 @@ class PartnerInherit(models.Model):
             existing_record = self.search([('no_ktp', '=', record.no_ktp)])
             if len(existing_record) > 1:
                 raise ValidationError('No KTP already exists.')
-    
-    
-   
