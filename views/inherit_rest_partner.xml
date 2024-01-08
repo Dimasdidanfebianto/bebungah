@@ -9,9 +9,10 @@
         <xpath expr="//field[@name='vat']" position="after">
           <field name="no_ktp" placeholder="Nomor KTP" />
           <field name="id_kk" placeholder="Nomor KK" />
-          <field name="no_tps" placeholder="No TPS" />
-          <field name="id_desa" placeholder="Nama Desa" />
+          <field name="no_tps" placeholder="No TPS disii 4 digit" />
+          <field name="id_kabupaten" placeholder="Nama Kabupaten" />
           <field name="id_kecamatan" placeholder="Nama Kecamatan" />
+          <field name="id_desa" placeholder="Nama Desa" />
           <field name="id_card" placeholder="No Seri Kartu" />         
         </xpath>
         <xpath expr="//field[@name='category_id']" position="after">
