@@ -10,8 +10,53 @@
           <field name="no_ktp" placeholder="Nomor KTP" />
           <field name="id_kk" placeholder="Nomor KK" />
           <field name="no_tps" placeholder="No TPS" />
+          <field name="kabupaten_id" placeholder="Nama Kabupaten" />
+          <field name="kecamatan_id" placeholder="Nama Kecamatan" />
           <field name="id_desa" placeholder="Nama Desa" />
-          <field name="id_kecamatan" placeholder="Nama Kecamatan" />
+          <field name="id_card" placeholder="No Seri Kartu" />         
+        </xpath>
+        <xpath expr="//field[@name='category_id']" position="after">
+          <field name="state_card" placeholder="Status Kartu Tim Sukses" />
+          <field name="state" placeholder="Status" /> 
+          <field name="state_pilih" placeholder="Status Pemilihan" />
+          <field name="code_minigold" placeholder="Kode Minigold" />
+          <field name="id_foto" placeholder="Foto Profile" />
+        </xpath>
+      </data>
+    </field>
+  </record>
+
+  <record id="res_partner_action_customer" model="ir.actions.act_window">
+    <field name="name">Anggota</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">res.partner</field>
+    <field name="view_mode">kanban,tree,form</field>
+    <field name="context">{'search_default_customer': 1, 'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1}</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        Create a new customer in your address book
+      </p>
+      <p>
+        Odoo helps you easily track all activities related to a customer.
+      </p>
+    </field>
+  </record>
+</odoo>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="res_partner_inherit_view_form" model="ir.ui.view">
+    <field name="name">res.partner.view.form.inherit.bebungah</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form" />
+    <field name="arch" type="xml">
+      <data>
+        <xpath expr="//field[@name='vat']" position="after">
+          <field name="no_ktp" placeholder="Nomor KTP" />
+          <field name="id_kk" placeholder="Nomor KK" />
+          <field name="no_tps" placeholder="No TPS" />
+          <field name="kabupaten_id" placeholder="Nama Kabupaten" />
+          <field name="kecamatan_id" placeholder="Nama Kecamatan" />
+          <field name="id_desa" placeholder="Nama Desa" />
           <field name="id_card" placeholder="No Seri Kartu" />         
         </xpath>
         <xpath expr="//field[@name='category_id']" position="after">
