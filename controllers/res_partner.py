@@ -17,8 +17,9 @@ class BebungahUser(http.Controller):
             phone = kw["phone"]
             street = kw["street"]
             no_ktp = kw["no_ktp"]
-            id_desa = kw["id_desa"]
+            id_kabupaten = kw["id_kabupaten"]
             id_kecamatan = kw["id_kecamatan"]
+            id_desa = kw["id_desa"]
             id_kk = kw["id_kk"]
             no_tps = kw["no_tps"]
             id_card = kw["id_card"]
@@ -41,8 +42,9 @@ class BebungahUser(http.Controller):
                 'phone': phone,
                 'street': street,
                 'no_ktp': no_ktp,
-                'id_desa': id_desa,
+                'id_kabupaten': id_kabupaten,
                 'id_kecamatan': id_kecamatan,
+                'id_desa': id_desa,
                 'id_kk': id_kk,
                 'no_tps': no_tps,
                 'id_card': id_card,
@@ -59,8 +61,9 @@ class BebungahUser(http.Controller):
                     'phone': newUser.phone,
                     'street': newUser.street,
                     'no_ktp': newUser.no_ktp,
-                    'id_desa': newUser.id_desa,
+                    'id_kabupaten': newUser.id_kabupaten,
                     'id_kecamatan': newUser.id_kecamatan,
+                    'id_desa': newUser.id_desa,
                     'id_kk': newUser.id_kk,
                     'no_tps': newUser.no_tps,
                     'id_card': newUser.id_card,
@@ -115,6 +118,7 @@ class BebungahUser(http.Controller):
                     'phone': user.phone,
                     'street': user.street,
                     'no_ktp': user.no_ktp,
+                    'id_kabupaten': user.id_kabupaten,
                     'id_desa': user.id_desa,
                     'id_kecamatan': user.id_kecamatan,
                     'id_kk': user.id_kk,
@@ -187,7 +191,7 @@ class BebungahUser(http.Controller):
         return http.Response(
             json.dumps({'success': False, 'error': error_message}),
             content_type='application/json;charset=utf-8',
-            status=400  # Sesuaikan dengan kebutuhan Anda
+            status=400  
         )
             
      #ENDPOINT UNTUK GET USER BY ID_CARD       
@@ -217,6 +221,7 @@ class BebungahUser(http.Controller):
             'phone': user_data.phone,
             'street': user_data.street,
             'no_ktp': user_data.no_ktp,
+            'id_kabupaten': user_data.id_kabupaten,
             'id_desa': user_data.id_desa,
             'id_kecamatan': user_data.id_kecamatan,
             'id_kk': user_data.id_kk,
