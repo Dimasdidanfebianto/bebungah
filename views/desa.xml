@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+    <!-- View Tree -->
+    <record id="desa_view_tree" model="ir.ui.view">
+      <field name="name">desa.view.tree</field>
+      <field name="model">bebungah.desa</field>
+      <field name="arch" type="xml">
+        <tree string="">
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <!-- View Form -->
+    <record id="desa_view_form" model="ir.ui.view">
+      <field name="name">desa.view.form</field>
+      <field name="model">bebungah.desa</field>
+      <field name="arch" type="xml">
+        <form string=" Daftar desa">
+          <sheet>
+            <group>
+              <field name="name" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Action -->
+    <record id="desa_action" model="ir.actions.act_window">
+      <field name="name">desa</field>
+      <field name="res_model">bebungah.desa</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    
+
+
+  </data>
+</odoo>
