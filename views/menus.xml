@@ -1,0 +1,11 @@
+<odoo>
+  <data>
+    <menuitem id="kabupaten_menu_root" name="Daftar Kabupaten"/>
+
+    <menuitem id="kabupaten_menu" name="Daftar Kabupaten" action="bebungah.kabupaten_action" parent="kabupaten_menu_root" />
+
+    <menuitem id="kecamatan_menu" name="Daftar Kecamatan" action="bebungah.kecamatan_action" parent="kabupaten_menu_root" />
+
+    <menuitem id="desa_menu" name="Daftar Desa" action="bebungah.desa_action" parent="kabupaten_menu_root" />
+  </data>
+</odoo>

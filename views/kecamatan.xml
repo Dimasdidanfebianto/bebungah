@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+    <!-- View Tree -->
+    <record id="kecamatan_view_tree" model="ir.ui.view">
+      <field name="name">kecamatan.view.tree</field>
+      <field name="model">bebungah.kecamatan</field>
+      <field name="arch" type="xml">
+        <tree string="">
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <!-- View Form -->
+    <record id="kecamatan_view_form" model="ir.ui.view">
+      <field name="name">kecamatan.view.form</field>
+      <field name="model">bebungah.kecamatan</field>
+      <field name="arch" type="xml">
+        <form string=" Daftar Kecamatan">
+          <sheet>
+            <group>
+              <field name="name" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Action -->
+    <record id="kecamatan_action" model="ir.actions.act_window">
+      <field name="name">Kecamatan</field>
+      <field name="res_model">bebungah.kecamatan</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    
+
+
+  </data>
+</odoo>
