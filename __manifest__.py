@@ -24,10 +24,15 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
-        'views/inherit_rest_partner.xml'
+        'views/kabupaten.xml',
+        'views/kecamatan.xml',
+        'views/desa.xml',
+        'views/menus.xml',
+        'views/inherit_rest_partner.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [
