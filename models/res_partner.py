@@ -1,20 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
-# class ResPartnerKabupaten(models.Model):
-#     _name = 'res.partner.kabupaten'
-#     _description = 'Kabupaten'
-
-#     name = fields.Char(string='Nama Kabupaten', required=True)
-#     kecamatan_ids = fields.One2many('res.partner.kecamatan', 'kabupaten_id', string='Kecamatans')
-
-# class ResPartnerKecamatan(models.Model):
-#     _name = 'res.partner.kecamatan'
-#     _description = 'Kecamatan'
-
-#     name = fields.Char(string='Nama Kecamatan', required=True)
-#     kabupaten_id = fields.Many2one('res.partner.kabupaten', string='Kabupaten')
-
 class ResPartner(models.Model):
     _inherit = 'res.partner'
     
@@ -26,10 +12,10 @@ class ResPartner(models.Model):
         ('sudah memilih', 'Sudah Memilih'),
         ('belum memilih', 'Belum Memilih'),
     ], string='Status Pemilihan', default='belum memilih')
-    # kabupaten_id = fields.Many2one('res.partner.kabupaten', string='Kabupaten')
-    # kecamatan_id = fields.Many2one('res.partner.kecamatan', string='Kecamatan')
-    kabupaten_id = fields.Char(string='Kabupaten')
-    kecamatan_id = fields.Char(string='Kecamatan')
+    kabupaten_id = fields.Many2one('bebungah.kabupaten', string='Kabupaten')
+    kecamatan_id = fields.Many2one('bebungah.kecamatan', string='Kecamatan')
+    # desa_id = fields.Many2one('bebungah.desa', string='Desa')
+    
     no_tps = fields.Char(string='No TPS')
         
     id_desa = fields.Char(string='Nama Desa')
