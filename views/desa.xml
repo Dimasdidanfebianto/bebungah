@@ -7,7 +7,7 @@
       <field name="arch" type="xml">
         <tree string="">
           <field name="name" />
-          <field name="kecamatan_id" />
+          <field name="id_kecamatan" />
         </tree>
       </field>
     </record>
@@ -21,7 +21,7 @@
           <sheet>
             <group>
               <field name="name" />
-              <field name="kecamatan_id" />
+              <field name="id_kecamatan" />
             </group>
           </sheet>
         </form>
