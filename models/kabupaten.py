@@ -5,4 +5,4 @@ class ResPartnerKabupaten(models.Model):
     _description = 'bebungah.kabupaten'
 
     name = fields.Char(string='Nama Kabupaten', required=True)
-    kecamatan_ids = fields.One2many('bebungah.kecamatan', 'kabupaten_id', string='Kecamatans')
+    kecamatan_ids = fields.One2many('bebungah.kecamatan', 'id_kabupaten', string='Kecamatans')
