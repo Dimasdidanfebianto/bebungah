@@ -12,8 +12,8 @@ class ResPartner(models.Model):
         ('sudah memilih', 'Sudah Memilih'),
         ('belum memilih', 'Belum Memilih'),
     ], string='Status Pemilihan', default='belum memilih')
-    kabupaten_id = fields.Many2one('bebungah.kabupaten', string='Kabupaten')
-    kecamatan_id = fields.Many2one('bebungah.kecamatan', string='Kecamatan')
+    id_kabupaten = fields.Many2one('bebungah.kabupaten', string='Kabupaten')
+    id_kecamatan = fields.Many2one('bebungah.kecamatan', string='Kecamatan')
     no_tps = fields.Char(string='No TPS')
     id_desa = fields.Many2one('bebungah.desa', string='Desa')
     id_foto = fields.Binary(string='Foto Kartu Tim Sukses')
