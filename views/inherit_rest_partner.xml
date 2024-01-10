@@ -10,8 +10,8 @@
           <field name="no_ktp" placeholder="Nomor KTP" />
           <field name="id_kk" placeholder="Nomor KK" />
           <field name="no_tps" placeholder="No TPS" />
-          <field name="kabupaten_id" placeholder="Nama Kabupaten" />
-          <field name="kecamatan_id" placeholder="Nama Kecamatan" />
+          <field name="id_kabupaten" placeholder="Nama Kabupaten" />
+          <field name="id_kecamatan" placeholder="Nama Kecamatan" />
           <field name="id_desa" placeholder="Nama Desa" />
           <field name="id_card" placeholder="No Seri Kartu" />         
         </xpath>
